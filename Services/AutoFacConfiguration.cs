@@ -1,6 +1,10 @@
 ﻿using Autofac;
 using Infostructure.InterfaceGeneric;
+using Infostructure.IUser;
+using Infostructure.IUser.IServicesToken;
 using Repositery.GenericRostery;
+using Repositery.Userrepositery;
+using Repositery.Userrepositery.IServicesToken;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +22,22 @@ namespace Services
 
 
             #region Generic
-            builder.RegisterGeneric(typeof(GenericRepostery<>)).As(typeof(IGenericRepositery<>));
+               builder.RegisterGeneric(typeof(GenericRepostery<>)).As(typeof(IGenericRepositery<>));
             #endregion
+
+            #region UniteOfWork
+            builder.RegisterGeneric(typeof(UniteOfWork<>)).As(typeof(IUniteOfWork<>));
+            #endregion
+            #region UserRepositery
+            builder.RegisterType<UserRepositry>().As<IUserRepositery>();
+            #endregion
+            #region TokenServices
+            builder.RegisterType<TokenServices>().As<ITokenServices>();
+            #endregion
+
+
+
+            
 
         }
     }

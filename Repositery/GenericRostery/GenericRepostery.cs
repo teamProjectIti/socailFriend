@@ -24,9 +24,6 @@ namespace Repositery.GenericRostery
         {
             return await context.Set<T>().FindAsync(id);
         }
-
-
-
         public async Task<IReadOnlyList<T>> ListAllAsync()
         {
             return await context.Set<T>().ToListAsync();
@@ -40,12 +37,26 @@ namespace Repositery.GenericRostery
         {
             return await ApplaySpecaction(spec).ToListAsync();
         }
-
         private IQueryable<T> ApplaySpecaction(ISpecailization<T> specailization)
         {
             return SpecailizationEvaluation<T>.GetQuery(context.Set<T>().AsQueryable(), specailization);
         }
 
+        public async Task Add<T1>(T1 entity) where T1 : class
+        {
+            await this.context.AddAsync(entity);
+        }
 
+        public void update<T1>(T1 entity) where T1 : class
+        {
+            context.Update(entity);
+        }
+
+        public void Delete<T1>(T1 entity) where T1 : class
+        {
+            context.Remove(entity);
+        }
+
+       
     }
 }

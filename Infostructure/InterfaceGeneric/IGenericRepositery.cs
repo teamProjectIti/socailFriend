@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Infostructure.InterfaceGeneric
 {
-    public interface IGenericRepositery<T> where T : class
+    public interface IGenericRepositery<T>:IBase where T : class
     {
         Task<T> GetByIDAsync(int id);
         Task<IReadOnlyList<T>> ListAllAsync();
@@ -16,6 +16,7 @@ namespace Infostructure.InterfaceGeneric
         Task<T> Get_Entity_With_Include(ISpecailization<T> spec);
         //get list obj with include
         Task<IReadOnlyList<T>> Get_LisT_With_Include(ISpecailization<T> spec);
+
 
     }
 

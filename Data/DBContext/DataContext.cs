@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Data.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,7 @@ namespace Data.DBContext
         { }
 
         public DbSet<test> tests { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
+        
     }
 }

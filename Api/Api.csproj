@@ -43,6 +43,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
     <ProjectReference Include="..\Infostructure\Infostructure.csproj" />
+    <ProjectReference Include="..\ModeDTO\ModeDTO.csproj" />
     <ProjectReference Include="..\Repositery\Repositery.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
