@@ -16,7 +16,7 @@ namespace Services.Extentions
         {
             // connectio sql
             services.AddDbContext<DataContext>(x =>
-                  x.UseLazyLoadingProxies().UseSqlServer(config.GetConnectionString("ConnectionStrings")));
+                  x.UseLazyLoadingProxies().UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
                   return services;
         }
