@@ -25,9 +25,10 @@ namespace Repositery.GenericRostery
             }
         }
 
-        public void save()
+        public bool save()
         {
             context.SaveChanges();
+                return true;
         }
     }
 }

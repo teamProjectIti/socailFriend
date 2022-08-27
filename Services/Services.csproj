@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Infostructure\Infostructure.csproj" />
+    <ProjectReference Include="..\ModeDTO\ModeDTO.csproj" />
     <ProjectReference Include="..\Repositery\Repositery.csproj" />
   </ItemGroup>
 

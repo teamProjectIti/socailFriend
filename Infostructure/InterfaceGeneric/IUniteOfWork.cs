@@ -10,7 +10,7 @@ namespace Infostructure.InterfaceGeneric
     {
         IGenericRepositery<T> Entity { get; }
 
-        void save();
+        bool save();
 
     }
 }

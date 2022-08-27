@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using AutoMapper;
+using Data.Models;
 using Data.Models.Users;
 using Infostructure.InterfaceGeneric;
 using Infostructure.IUser;
@@ -6,8 +7,10 @@ using Infostructure.IUser.IServicesToken;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ModeDTO.DtoAutoMapper;
 using ModeDTO.UserDto;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,28 +24,38 @@ namespace Api.Controllers
         private readonly IGenericRepositery<AppUser> repositery;
         private readonly IUniteOfWork<AppUser> uniteOfWork;
         private readonly IUserRepositery userRepositery;
+        private readonly IMapper mapper;
 
-        public UsersController(ITokenServices token, IGenericRepositery<AppUser> repositery, IUniteOfWork<AppUser> uniteOfWork, IUserRepositery userRepositery)
+        public UsersController(
+            ITokenServices token,
+            IGenericRepositery<AppUser> repositery,
+            IUniteOfWork<AppUser> uniteOfWork, IUserRepositery userRepositery,
+            IMapper mapper
+            )
         {
             this.token = token;
             this.repositery = repositery;
             this.uniteOfWork = uniteOfWork;
             this.userRepositery = userRepositery;
+            this.mapper = mapper;
         }
 
         [AllowAnonymous]
         [HttpGet("getAll")]
-        public async Task<ActionResult<IEnumerable<AppUser>>> getall( )
+        public async Task<ActionResult<IEnumerable<MemberDto>>> getall()
         {
             var res = await repositery.ListAllAsync();
+
+            var userReturn = mapper.Map<IEnumerable<MemberDto>>(res);
             return Ok(res);
         }
         [Authorize]
         [HttpGet("{id:int}", Name = "getByID")]
-        public async Task<ActionResult<IEnumerable<AppUser>>> getByID(int id)
+        public async Task<ActionResult<MemberDto>> getByID(int id)
         {
-            var res =await repositery.GetByIDAsync(id);
-            return Ok(res);
+            var AppUser = await repositery.GetByIDAsync(id);
+            var result = mapper.Map<MemberDto>(AppUser);
+            return Ok(result);
         }
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> register([FromBody] registerDto model)
@@ -55,20 +68,21 @@ namespace Api.Controllers
                 if (ModelState.IsValid)
                 {
 
+                    var user = mapper.Map<AppUser>(model);
+
+
                     using var hmac = new HMACSHA512();
-                    var user = new AppUser
-                    {
-                        UserName = model.UserName.ToLower(),
-                        passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(model.Password)),
-                        passwordSalt=hmac.Key
-                    };
+                    user.UserName = model.UserName.ToLower();
+                    user.passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(model.Password));
+                    user.passwordSalt = hmac.Key;
 
                     await repositery.Add(user);
                     uniteOfWork.save();
                     return new UserDto
                     {
-                        UserName=user.UserName,
-                        Token=token.CreateToken(user)
+                        UserName = user.UserName,
+                        Token = token.CreateToken(user),
+                        KnownAs=user.KnownAs
                     };
                 }
             }
@@ -101,7 +115,9 @@ namespace Api.Controllers
                 return new UserDto
                 {
                     UserName = user.UserName,
-                    Token = token.CreateToken(user)
+                    Token = token.CreateToken(user),
+                    KnownAs = user.KnownAs
+
                 };
             }
             catch (System.Exception)
@@ -110,9 +126,30 @@ namespace Api.Controllers
             }
 
         }
+
+        [HttpPost("UpdateUser")]
+        public async Task<ActionResult<MemberDto>> UpdateUser(MemberUpdateDto model)
+        {
+            try
+            {
+                var userName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                AppUser user = await userRepositery.GetObjectAppUser(userName);
+
+                mapper.Map(model, user);
+                repositery.update(user);
+                if (uniteOfWork.save()) return NoContent();
+
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+            return BadRequest("Failed to update user");
+        }
+
         private async Task<bool> userExist(string username)
         {
-           return await userRepositery.GetFirst(username);
+            return await userRepositery.GetFirst(username);
         }
 
     }

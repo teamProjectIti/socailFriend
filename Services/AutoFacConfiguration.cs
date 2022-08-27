@@ -1,8 +1,10 @@
 ﻿using Autofac;
+using Infostructure.ILike;
 using Infostructure.InterfaceGeneric;
 using Infostructure.IUser;
 using Infostructure.IUser.IServicesToken;
 using Repositery.GenericRostery;
+using Repositery.likesRepositery;
 using Repositery.Userrepositery;
 using Repositery.Userrepositery.IServicesToken;
 using System;
@@ -33,11 +35,15 @@ namespace Services
             #endregion
             #region TokenServices
             builder.RegisterType<TokenServices>().As<ITokenServices>();
+            #endregion 
+            #region TokenServices
+            builder.RegisterType<likeRepositery>().As<IlikeRepositery>();
             #endregion
-
-
-
             
+
+
+
+
 
         }
     }

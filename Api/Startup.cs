@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Services;
 using Services.Extentions;
 using Services.Middleware;
+using Services.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace Api
            
             services.AddApplicationServices(Configuration);
             services.AddIdentityServices(Configuration);
-
+            services.AddAUtoMapperServices(Configuration);
 
             // use identity framework with sql
             //services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<DataContext>()
@@ -80,6 +81,7 @@ namespace Api
                     });
             });
 
+            services.AddSignalR();
             // use policy Security for web site request 
             // cors validtion
             services.AddCors(opt =>
@@ -121,6 +123,7 @@ namespace Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<presenceHub>("hubs/presenceHub");
             });
         }
     }
